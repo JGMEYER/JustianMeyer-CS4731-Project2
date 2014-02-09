@@ -3,20 +3,26 @@ import java.util.*;
 public class RageBot {
     public static void DoTurn(PlanetWars pw) {
 	for (Planet source : pw.MyPlanets()) {
+	    
+	    // determine if enough ships to send
 	    if (source.NumShips() < 10 * source.GrowthRate()) {
-		continue;
+		    continue;
 	    }
+	    
+	    // find closest enemy planet
 	    Planet dest = null;
 	    int bestDistance = 999999;
 	    for (Planet p : pw.EnemyPlanets()) {
-		int dist = pw.Distance(source, p);
-		if (dist < bestDistance) {
-		    bestDistance = dist;
-		    dest = p;
-		}
+		    int dist = pw.Distance(source, p);
+    		if (dist < bestDistance) {
+    		    bestDistance = dist;
+    		    dest = p;
+    		}
 	    }
+	    
+	    // send all resources to selected planet
 	    if (dest != null) {
-		pw.IssueOrder(source, dest, source.NumShips());
+		    pw.IssueOrder(source, dest, source.NumShips());
 	    }
 	}
     }
