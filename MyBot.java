@@ -20,86 +20,37 @@ public class MyBot {
     // http://www.ai-contest.com/resources.
     public static void DoTurn(PlanetWars pw) {
 
-        /*World w = new World(pw);
-        int score1 = w.scoreDifference();
-        w.timeStep(10);
-        int score2 = w.scoreDifference();
-        logf("%d %d\n", score1, score2);*/
+        int futureSteps = 30; // 30
+        int fractions = 5; // (i.e. 5 = 1/5, 2/5, 3/5, 4/5, 5/5)
 
         // Have each planet expand to nearby planets
         for (Planet source : pw.MyPlanets()) {
             Planet dest = null;
-            double bestScore = 0;
+            double bestScore = Double.MIN_VALUE;
+            int fleetSize = 0;
             
-            for (Planet neut : pw.NeutralPlanets()) {
-                //int score = neut.GrowthRate() - (int)Math.pow(pw.Distance(source.PlanetID(), neut.PlanetID()),2) - (int)Math.sqrt(neut.NumShips());
-                double score = Math.pow(pw.Distance(source.PlanetID(), neut.PlanetID()),-1)*neut.GrowthRate() + Math.pow(neut.NumShips(),-1);
-                if (score > bestScore) {
-                    bestScore = score;
-                    dest = neut;
+            for (Planet neut : pw.Planets()) {
+                for (int i = 1; i < fractions; i++) {
+                    World w = new World(pw);
+                    w.addFleet(source.PlanetID(), neut.PlanetID(), (i*source.NumShips())/fractions);
+                    w.timeStep(futureSteps);
+                    double score = w.score();
+                
+                    if (score > bestScore) {
+                        bestScore = score;
+                        dest = neut;
+                        fleetSize = (i*source.NumShips())/fractions;
+                    }
                 }
             }
             
-            if (source != null && dest != null) {
-                int fleetSize = source.NumShips()/10;
-                
-                /*int futureSteps = 20;
-                int estMovesToCapture = dest.NumShips()/fleetSize;
-                
-                int dist = pw.Distance(source.PlanetID(), dest.PlanetID());
-                int noMove = source.GrowthRate()*futureSteps;
-                int move = source.GrowthRate()*futureSteps + dest.GrowthRate()*(futureSteps-dist) - dest.NumShips();
-                
-                if (move > noMove) {
-                    pw.IssueOrder(source, dest, source.NumShips()/10);
-                }*/
-                
+            if (source != null && dest != null && fleetSize > 0) {
                 World w = new World(pw);
-                w.timeStep(10);
-                
-                World w2 = new World(pw);
-                w2.addFleet(source.PlanetID(), dest.PlanetID(), fleetSize);
-                w2.timeStep(10);
-                
-                if (w2.score() > w.score()) {
+                if (bestScore > w.score()) {
                     pw.IssueOrder(source, dest, fleetSize);
                 }
             }
         }
-
-	    /*
-	    // (1) If we currently have a fleet in flight, just do nothing.
-    	if (pw.MyFleets().size() >= 1) {
-    	    return;
-    	}
-    	
-    	// (2) Find my strongest planet.
-    	Planet source = null;
-    	double sourceScore = Double.MIN_VALUE;
-    	for (Planet p : pw.MyPlanets()) {
-    	    double score = (double)p.NumShips();
-    	    if (score > sourceScore) {
-    		    sourceScore = score;
-        		source = p;
-    	    }
-    	}
-    	// (3) Find the weakest enemy or neutral planet.
-    	Planet dest = null;
-    	double destScore = Double.MIN_VALUE;
-    	for (Planet p : pw.NotMyPlanets()) {
-    	    double score = 1.0 / (1 + p.NumShips());
-    	    if (score > destScore) {
-    		    destScore = score;
-        		dest = p;
-    	    }
-    	}
-    	// (4) Send half the ships from my strongest planet to the weakest
-    	// planet that I do not own.
-    	if (source != null && dest != null) {
-    	    int numShips = source.NumShips() / 2;
-    	    pw.IssueOrder(source, dest, numShips);
-    	}
-    	*/
     }
     
     // Output message to log file
@@ -302,19 +253,15 @@ public class MyBot {
             }
         }
         
-        // Returns positive value if player is winning, negative if enemy is
-        // winning, and zero if both parties share the same score. May not
-        // always be an accurate measure of which party will win in the given
-        // state.
         public int score() {
             int[] scores = new int[3];
             
             for (Planet p : planets) {
-                scores[p.Owner()] += p.NumShips()+2*p.GrowthRate(); // value generation more
+                scores[p.Owner()] += p.NumShips();
             }
             
             for (Fleet f : fleets) {
-                scores[f.Owner()] += f.NumShips();
+                //scores[f.Owner()] += f.NumShips();
             }
             
             return scores[1] - scores[2];
