@@ -23,6 +23,9 @@ public class MyBot {
         int futureSteps = 30; // 30
         int fractions = 5; // (i.e. 5 = 1/5, 2/5, 3/5, 4/5, 5/5)
 
+        World curWorld = new World(pw);
+        curWorld.timeStep(futureSteps);
+
         // Have each planet expand to nearby planets
         for (Planet source : pw.MyPlanets()) {
             Planet dest = null;
@@ -44,7 +47,7 @@ public class MyBot {
                 }
             }
             
-            if (source != null && dest != null && fleetSize > 0) {
+            if (source != null && dest != null && bestScore > curWorld.score() && fleetSize > 0) {
                 World w = new World(pw);
                 if (bestScore > w.score()) {
                     pw.IssueOrder(source, dest, fleetSize);
@@ -261,7 +264,7 @@ public class MyBot {
             }
             
             for (Fleet f : fleets) {
-                //scores[f.Owner()] += f.NumShips();
+                // scores[f.Owner()] += f.NumShips();
             }
             
             return scores[1] - scores[2];
