@@ -1,0 +1,75 @@
+================================================================================
+AI VERSION 0.1:
+Have each planet individually look 30 turns ahead and determine which fraction
+sent to which planet would yield highest score, then execute the action.
+================================================================================
+
+BULLY BOT:
+	Wins: 100/100
+	Losses: 0/100
+	Timeouts: 0/100
+DUAL BOT:
+	Wins: 100/100
+	Losses: 0/100
+	Timeouts: 0/100
+EXPAND BOT:
+	Wins: 100/100
+	Losses: 0/100
+	Timeouts: 0/100
+PROSPECTOR BOT:
+	Wins: 100/100
+	Losses: 0/100
+	Timeouts: 0/100
+RAGE BOT:
+	>map22.txt lost
+	>map26.txt lost
+	>map27.txt lost
+	>map30.txt lost
+	>map61.txt lost
+	Wins: 95/100
+	Losses: 5/100
+	Timeouts: 0/100
+RANDOM BOT:
+	Wins: 100/100
+	Losses: 0/100
+	Timeouts: 0/100
+
+
+================================================================================
+AI VERSION 0.2
+If the home planets start within 10 steps of each other, perform a variation of
+minimax to prevent rage attacks. Minimax ends once the player gains more
+resources then the opponent. After "rage defense" ends, perform AI Version 0.1
+for the remainder of the matchup, instead scoring by total ships on fleets and
+planets as opposed to just total ships on planets.
+================================================================================
+
+BULLY BOT:
+	Wins: 100/100 (112.06)
+	Losses: 0/100 (�)
+	Draws: 0/100 (�)
+	Timeouts: 0/100
+DUAL BOT:
+	Wins: 100/100 (90.72)
+	Losses: 0/100 (�)
+	Draws: 0/100 (�)
+	Timeouts: 0/100
+PROSPECTOR BOT:
+	Wins: 100/100 (107.87)
+	Losses: 0/100 (�)
+	Draws: 0/100 (�)
+	Timeouts: 0/100
+RAGE BOT:
+	>map26.txt draw
+	>map27.txt lost
+	>map30.txt draw
+	>map61.txt draw
+	Wins: 96/100 (71.46)
+	Losses: 1/100 (30)
+	Draws: 3/100 (201)
+	Timeouts: 0/100
+RANDOM BOT:
+	Wins: 100/100 (97.6)
+	Losses: 0/100 (�)
+	Draws: 0/100 (�)
+	Timeouts: 0/100
