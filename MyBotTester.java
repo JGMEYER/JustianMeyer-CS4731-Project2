@@ -14,8 +14,36 @@ public class MyBotTester {
         String log_title = "testlog.txt";
         
         try {
-            String[] cmd = {"bash","bot_tester.sh","&>","testlog.txt"};
-            execCmd(cmd);
+            //String[] cmd = {"bash","bot_tester.sh","&>","testlog.txt"};
+            //execCmd(cmd);
+            
+            for (int i = 1; i <= 100; i++) {
+                File map = new File("maps/map"+i+".txt");
+                Scanner scan = new Scanner(map);
+                String line;
+                double px=0, py=0, ex=0, ey=0;
+                
+                while (scan.hasNext()) {
+                    line = scan.nextLine();
+                    String[] split = line.split(" ");
+                    
+                    if (split.length == 6) {
+                        if (split[3].equals("1")) {
+                            px = Double.parseDouble(split[1]);
+                            py = Double.parseDouble(split[2]);
+                        } else if (split[3].equals("2")) {
+                            ex = Double.parseDouble(split[1]);
+                            ey = Double.parseDouble(split[2]);
+                        }
+                    }
+                }
+                 
+                double dx = px-ex;
+                double dy = py-ey;
+                int dist = (int)Math.ceil(Math.sqrt(dx*dx + dy*dy));
+                
+                System.out.printf("Map%d: %d\n", i, dist);
+            }
             
             File testlog = new File(log_title);
             calcWinLoss(testlog);
@@ -30,63 +58,71 @@ public class MyBotTester {
 	    
 	    int wins = 0;
 	    int losses = 0;
+	    int draws = 0;
 	    int timeouts = 0;
 	    int games = 0;
+	    int turn = 0;
+	    int winTurns = 0;
+	    int lossTurns = 0;
+	    int drawTurns = 0;
 	    DecimalFormat df = new DecimalFormat("#.##");
 	    
 	    while (scan.hasNext()) {
 	        line = scan.nextLine();
 	        
+	        int turnIndex = line.lastIndexOf("Turn ");
+	        
+	        if (turnIndex > -1) {
+    	        String turnString = line.substring(turnIndex+5);
+    	        turn = Integer.parseInt(turnString);
+            }
+	        
 	        // Winner decided
-	        if (line.equals("Player 1 Wins!") || line.equals("Player 2 Wins!")) {
-	            if (line.equals("Player 1 Wins!")) {
-	                wins++;
-	            } else {
-	                losses++;
-	                System.out.printf("\t>map%d.txt lost\n", games);
-	            }
+	        if (line.contains("Player 1 Wins!") || line.contains("Player 2 Wins!") || line.contains("Draw!")) {
 	            games++;
+	            
+	            if (line.contains("Player 1 Wins!")) {
+	                wins++;
+	                winTurns += turn;
+	            } else  if (line.contains("Player 2 Wins!")) {
+	                losses++;
+	                lossTurns += turn;
+	                System.out.printf("\t>map%d.txt lost\n", games);
+	            } else {
+    	            draws++;
+    	            drawTurns += turn;
+    	            System.out.printf("\t>map%d.txt draw\n", games);
+	            }
+	            turn = 0;
 	        }
 	        
 	        boolean newBot = line.startsWith("BOT_");
 	        
 	        // New bot introduced or no more info
 	        if (newBot || !scan.hasNext()) {
-	            if (wins > 0 && games > 0) {
-	                System.out.printf("\tWins: %d/%d (%s)\n", wins, games, df.format((double) wins/games));
-	                System.out.printf("\tLosses: %d/%d (%s)\n", losses, games, df.format((double) losses/games));
-	                System.out.printf("\tTimeouts: %d/%d (%s)\n", timeouts, games, df.format((double) timeouts/games));
+	            if (games > 0) {
+	                System.out.printf("\tWins: %d/%d (%s)\n", wins, games, df.format((double) winTurns/wins));
+	                System.out.printf("\tLosses: %d/%d (%s)\n", losses, games, df.format((double) lossTurns/losses));
+	                System.out.printf("\tDraws: %d/%d (%s)\n", draws, games, df.format((double) drawTurns/draws));
+	                System.out.printf("\tTimeouts: %d/%d\n", timeouts, games);
                 }
 	            
 	            if (newBot) {
 	                System.out.printf("%s BOT:\n", line.substring(4));
 	            }
 	            wins = 0;
+	            losses = 0;
 	            games = 0;
+	            turn = 0;
+	            winTurns = 0;
+	            lossTurns = 0;
+	            drawTurns = 0;
 	        }
 	    }
 	}
 	
 	public static void execCmd(String[] cmd) throws java.io.IOException {
 		Process proc = Runtime.getRuntime().exec(cmd);
-		//java.io.InputStream is = proc.getInputStream();
-		// java.util.Scanner s = new java.util.Scanner(is);//.useDelimiter("\\A");
-		//        String val = "";
-		//        if (s.hasNext()) {
-		//            val = s.next();
-		//            System.out.println(val);
-		//        } else {
-		//            val = "";
-		//        }
-        //BufferedReader in = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-        //StringBuffer buffer = new StringBuffer();
-        // String line = null;
-        //         while ((line = in.readLine()) != null) {
-        //             buffer.append(line).append("\n");
-        //         }
-        //         System.out.println(buffer.toString());
-        //         in.close();
-        // return null;
 	}
 
 }
