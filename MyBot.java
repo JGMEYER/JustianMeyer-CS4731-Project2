@@ -18,8 +18,6 @@ public class MyBot {
     
     // Useful variables (these may be removed later)
     private static int turn = 1;
-    private static int myHomeID = -1;
-    private static int enHomeID = -1;
     
     // Start the game with rageDefend off as default
     private static boolean rageDefend = false;
@@ -103,23 +101,15 @@ public class MyBot {
 
             curWorld.timeStep(FUTURE_STEPS);
 
-            // Have each planet expand to nearby planets
+            // Have each planet expand to most advantageous planet
             for (Planet source : pw.MyPlanets()) {
                 Planet dest = null;
                 double bestScore = Double.MIN_VALUE;
                 int fleetSize = 0;
-
-                List<Planet> planetPool;
-
-                // If we're winning by a high enough margin, target only enemy planets
-                // if (curScore >= 100) {
-                //     planetPool = pw.EnemyPlanets();
-                // } else {
-                //     planetPool = pw.Planets();
-                // }
-                planetPool = pw.Planets();
-
-                for (Planet p : planetPool) {
+                
+                // Determine sending to which planet produces the highest score
+                // FUTURE_STEPS into the future.
+                for (Planet p : pw.Planets()) {
                     for (int i = 1; i < fractions; i++) {
                         World w = new World(pw);
                         w.addFleet(source.PlanetID(), p.PlanetID(), (i*source.NumShips())/fractions);
@@ -619,7 +609,16 @@ public class MyBot {
                 scores[f.Owner()] += f.NumShips();
             }
             
-            return scores[1] - scores[2];
+            // TODO: GIVE -HUGE- WEIGHTING TO MOVES THAT DESTROY THE OTHER PLAYER
+            // like, double their score
+            
+            // if (scores[1] == 0) {
+            //                 return Integer.MIN_VALUE;
+            //             } else if (scores[2] == 0) {
+            //                 return Integer.MAX_VALUE;
+            //             } else {
+                return scores[1] - scores[2];
+            // }
         }
     }
     

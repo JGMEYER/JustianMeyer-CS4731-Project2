@@ -306,8 +306,6 @@ java -jar tools/PlayGame.jar maps/map98.txt 1000 200 log.txt "java MyBot" "java 
 java -jar tools/PlayGame.jar maps/map99.txt 1000 200 log.txt "java MyBot" "java -jar example_bots/ProspectorBot.jar"
 java -jar tools/PlayGame.jar maps/map100.txt 1000 200 log.txt "java MyBot" "java -jar example_bots/ProspectorBot.jar"
 
-:<< 'COMMENT1'
-
 echo 'BOT_RAGE'
 java -jar tools/PlayGame.jar maps/map1.txt 1000 200 log.txt "java MyBot" "java -jar example_bots/RageBot.jar"
 java -jar tools/PlayGame.jar maps/map2.txt 1000 200 log.txt "java MyBot" "java -jar example_bots/RageBot.jar"
@@ -409,8 +407,6 @@ java -jar tools/PlayGame.jar maps/map97.txt 1000 200 log.txt "java MyBot" "java 
 java -jar tools/PlayGame.jar maps/map98.txt 1000 200 log.txt "java MyBot" "java -jar example_bots/RageBot.jar"
 java -jar tools/PlayGame.jar maps/map99.txt 1000 200 log.txt "java MyBot" "java -jar example_bots/RageBot.jar"
 java -jar tools/PlayGame.jar maps/map100.txt 1000 200 log.txt "java MyBot" "java -jar example_bots/RageBot.jar"
-
-COMMENT1
 
 echo 'BOT_RANDOM'
 java -jar tools/PlayGame.jar maps/map1.txt 1000 200 log.txt "java MyBot" "java -jar example_bots/RandomBot.jar"
