@@ -8,14 +8,23 @@ public class MyBotTester {
     // solution - run all possibilities in bot_test.sh -> "bash bot_tester.sh &> testlog.txt", then parse testlog.txt
 
 	public static void main(String[] args) {
+	    
+	    /*for (int i = 1; i <= 100; i++) {
+	        System.out.println("java -jar tools/PlayGame.jar maps/map"+i+".txt 1000 200 log.txt \"java MyBot\" \"java -cp example_bots/NinoBot MyBot\"");
+	    }*/
+	    
         int maps[] = {1, 60};
         int max_turn_time = 1000;
         int max_num_turns = 200;
         String log_title = "testlog.txt";
         
+        int totalDist = 0;
+        
         try {
             //String[] cmd = {"bash","bot_tester.sh","&>","testlog.txt"};
             //execCmd(cmd);
+            
+            System.out.println("Initial Planet Distances:");
             
             for (int i = 1; i <= 100; i++) {
                 File map = new File("maps/map"+i+".txt");
@@ -43,7 +52,11 @@ public class MyBotTester {
                 int dist = (int)Math.ceil(Math.sqrt(dx*dx + dy*dy));
                 
                 System.out.printf("Map%d: %d\n", i, dist);
+                
+                totalDist += dist;
             }
+            
+            System.out.printf("AvgDist: %f\n", (double)(totalDist/100));
             
             File testlog = new File(log_title);
             calcWinLoss(testlog);

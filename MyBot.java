@@ -6,11 +6,12 @@ public class MyBot {
 
     // Strategies to consider:
     // - check distance of enemy planet at start; if closer than any other
-    //      planet, ragebot! (5, 6, 11, 5, 7)
+    //      planet, ragebot! (5, 6, 11, 5, 7) [SUCCESS]
     // - figure out a closing condition to finish off the enemy when
-    //      you're way ahead
+    //      you're way ahead [FAILED]
     // - reenforce planets closer to enemies (safely)
     // - wait out first turn to avoid getting ragebotted [FAILED]
+    // - have planets determine ragedefend/greedysearch independently [FAILED]
 
     // Debug variables
     private static PrintStream log;
@@ -18,6 +19,7 @@ public class MyBot {
     
     // Useful variables (these may be removed later)
     private static int turn = 1;
+    private static List<List<Integer>> closePlanets;
     
     // Start the game with rageDefend off as default
     private static boolean rageDefend = false;
@@ -41,6 +43,113 @@ public class MyBot {
     // your own. Check out the tutorials and articles on the contest website at
     // http://www.ai-contest.com/resources.
     public static void DoTurn(PlanetWars pw) {
+        
+        /*
+        if (turn == 1) {
+            // Create a chained array of nearby planets for each planet
+            closePlanets = new ArrayList<List<Integer>>(pw.NumPlanets());
+            
+            for (int i = 0; i < pw.NumPlanets(); i++) {
+                closePlanets.add(new ArrayList<Integer>());
+            }
+            
+            for (int pID1 = 0; pID1 < pw.NumPlanets(); pID1++) {
+                for (int pID2 = pID1+1; pID2 < pw.NumPlanets(); pID2++) {
+                    int dist = pw.Distance(pID1, pID2);
+                    
+                    if (dist > 0 && dist < 10) {
+                        closePlanets.get(pID1).add(pID2);
+                        closePlanets.get(pID2).add(pID1);
+                    }
+                }
+            }
+        }
+        
+        // For greedy search, create a model of current world
+        World curWorld = new World(pw);
+        int curScore = curWorld.score();
+        logf("Turn: %d, Score:%d\n", turn, curScore);
+        curWorld.timeStep(FUTURE_STEPS);
+        
+        for (Planet myP : pw.MyPlanets()) {
+            boolean nearbyEnemies = false;
+            
+            for (Integer id : closePlanets.get(myP.PlanetID())) {
+                if (pw.Planets().get(id.intValue()).Owner() == 2) {
+                    nearbyEnemies = true;
+                    break;
+                }
+            }
+            
+            // RAGE DEFEND
+            // Use a modified minimax with alpha-beta pruning to determine the best
+            // move for scenarios where both players start nearby each other
+            if (nearbyEnemies) {
+                try {
+                    World w = new World(pw);
+
+                    // Evaluate best action for each of the player's planets
+                    MiniMaxNode mmn = minimax(w, myP, 1);
+                    Action bestAction = mmn.action();
+
+                    // Don't send fleets of size 0
+                    if (bestAction.numShips > 0) {
+                        pw.IssueOrder(bestAction.src().PlanetID(), bestAction.dest().PlanetID(), bestAction.numShips());
+                    }
+
+                } catch (Exception e) {
+                    loge(e);
+                }
+            
+            // GREEDY SEARCH
+            // Have each of the player's planets simulate the sending some fractions
+            // of its units to all other planets, then evaluate FUTURE_STEPS steps
+            // into the future. The action, or lack thereof, that produces the
+            // highest future score is chosen.
+            } else {
+                int fractions = 5; // (i.e. 5 = 1/5, 2/5, 3/5, 4/5, 5/5)            
+
+                Planet dest = null;
+                double bestScore = Double.MIN_VALUE;
+                int fleetSize = 0;
+
+                // Determine sending to which planet produces the highest score
+                // FUTURE_STEPS into the future.
+                for (Planet p : pw.Planets()) {
+                    for (int i = 1; i < fractions; i++) {
+                        World w = new World(pw);
+                        w.addFleet(myP.PlanetID(), p.PlanetID(), (i*myP.NumShips())/fractions);
+
+                        // TODO: see if just checking that sending 1 planets ships
+                        // to a -certain planet- better than another planet's ships.
+                        // Prevents the issue where planets further away considered
+                        // for reinforcement.
+
+                        // add previously sent fleets by other planets this turn
+                        // for (Fleet f : sentFleets) {
+                        //     w.addFleet(f.SourcePlanet(), f.DestinationPlanet(), f.NumShips());
+                        // }
+
+                        w.timeStep(FUTURE_STEPS);
+                        double score = w.score();
+
+                        if (score > bestScore) {
+                            bestScore = score;
+                            dest = p;
+                            fleetSize = (i*myP.NumShips())/fractions;
+                        }
+                    }
+                }
+
+                if (myP != null && dest != null && bestScore > curWorld.score() && fleetSize > 0) {
+                    pw.IssueOrder(myP, dest, fleetSize);
+                    // nt tripLength = pw.Distance(source.PlanetID(), dest.PlanetID());
+                    // sentFleets.add(new Fleet(1, fleetSize, source.PlanetID(), dest.PlanetID(), tripLength, tripLength));
+                }
+            }
+            
+        }
+        */
         
         int myProduction = 0;
         int enProduction = 0;
@@ -113,6 +222,11 @@ public class MyBot {
                     for (int i = 1; i < fractions; i++) {
                         World w = new World(pw);
                         w.addFleet(source.PlanetID(), p.PlanetID(), (i*source.NumShips())/fractions);
+
+                        // TODO: see if just checking that sending 1 planets ships
+                        // to a -certain planet- better than another planet's ships.
+                        // Prevents the issue where planets further away considered
+                        // for reinforcement.
 
                         // add previously sent fleets by other planets this turn
                         // for (Fleet f : sentFleets) {
