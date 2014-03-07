@@ -15,11 +15,10 @@ public class MyBot {
 
     // Debug variables
     private static PrintStream log;
-    private static boolean debug = true;
+    private static boolean debug = false;
     
     // Useful variables (these may be removed later)
     private static int turn = 1;
-    private static List<List<Integer>> closePlanets;
     
     // Start the game with rageDefend off as default
     private static boolean rageDefend = false;
